@@ -1,13 +1,22 @@
 use std::env;
+use std::path::Path;
 
 fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
     if args.is_empty() {
-        eprintln!("用法: tertrans <要翻译的文字>");
+        eprintln!("用法: tertrans <要翻译的文字 | 文本文件路径>");
         std::process::exit(1);
     }
 
-    let text = args.join(" ");
+    // If a single argument is a valid file path, read its contents
+    let text = if args.len() == 1 && Path::new(&args[0]).is_file() {
+        std::fs::read_to_string(&args[0]).unwrap_or_else(|e| {
+            eprintln!("读取文件失败 {}: {}", args[0], e);
+            std::process::exit(1);
+        })
+    } else {
+        args.join(" ")
+    };
 
     let api_key = env::var("GLM_API_KEY").expect("请设置环境变量 GLM_API_KEY");
     let base_url =
@@ -21,7 +30,7 @@ fn main() {
             "model": "glm-4-flash",
             "messages": [{
                 "role": "system",
-                "content": "你是一个翻译器，将用户输入翻译为英文。只输出翻译结果，不要解释、不要注释、不要多余内容。如果输入已经是英文，原样返回。"
+                "content": "你是一个翻译器。自动检测输入语言：如果是中文，翻译为英文；如果是英文，翻译为中文。只输出翻译结果，不要解释、不要注释、不要多余内容。"
             }, {
                 "role": "user",
                 "content": text
