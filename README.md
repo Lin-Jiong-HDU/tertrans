@@ -41,6 +41,25 @@ sudo cp target/release/tertrans /usr/local/bin/
 
 ---
 
+## 在 GitHub 上云端编译（二进制下载）
+
+如果本地没有 Rust 环境，可以直接使用仓库内置的 GitHub Actions：
+
+1. 打开仓库的 **Actions** 页面
+2. 选择 **Build Linux Binary**
+3. 点击 **Run workflow**
+4. 任务完成后，在该次运行页的 **Artifacts** 下载 `tertrans-x86_64-unknown-linux-gnu`
+5. 解压并赋予执行权限：
+
+```bash
+tar -xzf tertrans-x86_64-unknown-linux-gnu.tar.gz
+chmod +x tertrans
+```
+
+可选：运行工作流时将 `upload_to_release` 设为 `true` 并提供 `release_tag`，会把同一个包自动附加到对应 GitHub Release。
+
+---
+
 ## 配置
 
 在使用前，需要设置以下环境变量：
@@ -49,6 +68,16 @@ sudo cp target/release/tertrans /usr/local/bin/
 |----------------|---------|--------------------------------------------------------------------------------------|
 | `GLM_API_KEY`  | **必填** | 智谱 AI 的 API Key，在 [BigModel 控制台](https://open.bigmodel.cn/) 创建              |
 | `GLM_BASE_URL` | 可选    | API 基础地址，默认为 `https://open.bigmodel.cn/api/paas/v4`，可替换为兼容接口的地址    |
+
+在 Linux 上运行本工具前，需要安装一个剪贴板命令（按桌面环境二选一）：
+
+```bash
+# Wayland
+sudo dnf install wl-clipboard
+
+# X11
+sudo dnf install xclip
+```
 
 推荐将变量写入 `~/.bashrc` 或 `~/.zshrc`：
 
